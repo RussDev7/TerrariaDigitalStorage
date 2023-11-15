@@ -4,25 +4,73 @@
 
 ## **RAM (1 bit each ~4 tiles)**
 
-## **RAM**
+![RAM1](https://github.com/RussDev7/TerrariaDigitalStorage/assets/33048298/4eafa669-5ab4-4451-8220-50534bb197ea)
 
-## **RAM**
-
-## **RAM**
-
-## **RAM**
-
-## **RAM**
-
-## **RAM**
- 
-<details><summary>120x68: Show Code</summary>
+NOTES:
+ - 
+ - 
+ - 
+<details><summary>Sample Program Code</summary>
  
 ```c#
 
 ```
 </details>
-<details><summary>144x92: Show Code</summary>
+
+## **Faulty Gate ROM (1 bit each 1 tile)**
+
+![ROM1](https://github.com/RussDev7/TerrariaDigitalStorage/assets/33048298/596920d3-c687-451f-b2d8-14e2ccb34918)
+
+NOTES:
+ - 
+ - 
+ - 
+<details><summary>Sample Program Code</summary>
+ 
+```c#
+
+```
+</details>
+
+## **Stacked Gate ROM (2 bits each 3 tiles)**
+
+![ROM2](https://github.com/RussDev7/TerrariaDigitalStorage/assets/33048298/7ef192c2-6c3e-4a11-8226-b07321c82654)
+
+NOTES:
+ - 
+ - 
+ - 
+<details><summary>Sample Program Code</summary>
+ 
+```c#
+
+```
+</details>
+
+## **Stacked Lamp ROM (4 bits each 3 tiles)**
+
+![ROM4](https://github.com/RussDev7/TerrariaDigitalStorage/assets/33048298/fbc6edb4-6493-481f-90db-829f45200f79)
+
+NOTES:
+ - 
+ - 
+ - 
+<details><summary>Sample Program Code</summary>
+ 
+```c#
+
+```
+</details>
+
+## **Duel Cell Stacked Gate ROM (4 bits each 3 tiles)**
+
+![ROM5](https://github.com/RussDev7/TerrariaDigitalStorage/assets/33048298/07ed023c-4d58-48f1-8a55-5d3ba1e9496c)
+
+NOTES:
+ - 
+ - 
+ - 
+<details><summary>Sample Program Code</summary>
  
 ```c#
 
