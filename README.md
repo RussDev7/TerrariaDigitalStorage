@@ -44,7 +44,21 @@ NOTES:
 ```
 </details>
 
-## **Stacked Lamp ROM (4 bits each 3 tiles)**
+## **Stacked Lamp Serial ROM (4 bits each 3 tiles)**
+![ROM3](https://github.com/RussDev7/TerrariaDigitalStorage/assets/33048298/c62619cb-1455-4f3a-821b-ed803514a75c)
+
+NOTES:
+ - 
+ - 
+ - 
+<details><summary>Sample Program Code</summary>
+ 
+```c#
+
+```
+</details>
+
+## **Stacked Lamp Parallel ROM (4 bits each 3 tiles)**
 ![ROM4](https://github.com/RussDev7/TerrariaDigitalStorage/assets/33048298/fbc6edb4-6493-481f-90db-829f45200f79)
 
 NOTES:
@@ -58,7 +72,7 @@ NOTES:
 ```
 </details>
 
-## **Duel Cell Stacked Gate ROM (4 bits each 3 tiles)**
+## **Duel Cell Stacked Lamp Parallel ROM (4 bits each 3 tiles)**
 ![ROM5](https://github.com/RussDev7/TerrariaDigitalStorage/assets/33048298/07ed023c-4d58-48f1-8a55-5d3ba1e9496c)
 
 NOTES:
