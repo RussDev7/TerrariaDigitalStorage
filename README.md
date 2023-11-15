@@ -151,6 +151,319 @@ namespace Terraria.Chat
 
 ![RAM1](https://github.com/RussDev7/TerrariaDigitalStorage/assets/33048298/4eafa669-5ab4-4451-8220-50534bb197ea)
 
+## **Stacked Gate ROM (2 bits each 3 tiles)**
+**NOTES:**
+ - Cells can easily be tiled.
+ - Data is stored vertically.
+ - The most lag friendly version of ROM.
+
+**REAL WORLD USES:**
+ - [Animated Gigachad Via 2000 Terraria Pixelboxes](https://www.youtube.com/watch?v=aD0I7u_OLuE)
+
+**SAMPLE PROGRAMMING CODE:**
+<details><summary>Show Code</summary>
+ 
+```c#
+//###################################################################################
+//Terraria.Chat > ChatCommandProcessor (OR CreateOutgoingMessage)
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using Microsoft.Xna.Framework;
+using Terraria.Chat.Commands;
+using Terraria.Localization;
+using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
+
+namespace Terraria.Chat
+{
+	public partial class ChatCommandProcessor : IChatProcessor
+	{
+		public void ProcessIncomingMessage(ChatMessage message, int clientId)
+		{
+			// ###################################################################################
+			if (message.Text.Contains("/arom")) // Animation rom.
+			{
+				string SchemName = "";
+				int RunBy = 0;
+				string Message = message.Text;
+				int nextRomDistance = 44;
+				// int nextRomDistance = 1308;
+				int offset = 0;
+				Vector2 playerPosition = new Vector2(Main.LocalPlayer.position.X / 16f + 2f + (float)offset, Main.LocalPlayer.position.Y / 16f);
+				Vector2 wirePosition = playerPosition;
+				int WireColor = 1;
+				try
+				{
+					// Create a new list of words based on a sentences spaces.
+					List<string> wordList = Message.TrimStart(new char[]{' '}).Split(new char[]{' '}).ToList<string>();
+					wordList.RemoveAt(0); // Remove the first word -> /schem.
+					
+					// Define variables based on the list of words.
+					foreach (string OutString in string.Join(" ", wordList.ToArray()).Split(new char[]{' '}))
+					{
+						if (RunBy == 0) // Define the first variable.
+						{
+							SchemName = OutString;
+							RunBy++;
+						}
+					}
+
+					// Load Schem
+					if (SchemName == "")
+					{
+						Console.WriteLine("ERROR: Type a schematic name!");
+						Main.NewTextMultiline("ERROR: Type a schematic name!", false, Color.Red, -1);
+						return;
+					}
+					else
+					{
+						try
+						{
+							// Go through each line of wordlist.
+							foreach (string Line in File.ReadLines(@"C:\Program Files (x86)\Steam\steamapps\common\Terraria\#romupload\" + SchemName + ".txt"))
+							{
+								// string[] array2 = ChatCommandProcessor.SplitIntoEqualParts(Line, 6);
+								string[] array2 = ChatCommandProcessor.SplitIntoEqualParts(Line, 1);
+								string[] array = array2;
+								for (int i = 0; i < array.Length; i++)
+								{
+									foreach (string LinePart in ChatCommandProcessor.SplitIntoEqualParts(array[i], 2))
+									{
+										// Check if to use encoding.
+										var bitFormat = ConvertXORArray(LinePart);
+										for (int k = 0; k < bitFormat.Length; k++)
+										{
+											if (bitFormat[k].ToString() == "1")
+											{
+												if (WireColor == 1)
+												{
+													WorldGen.PlaceWire2((int)wirePosition.X, (int)wirePosition.Y);
+												}
+												else if (WireColor == 2)
+												{
+													WorldGen.PlaceWire((int)wirePosition.X, (int)wirePosition.Y);
+												}
+											}
+
+											wirePosition.Y += 3f;
+										}
+
+										wirePosition.Y = playerPosition.Y;
+										WireColor = 2;
+									}
+
+									WireColor = 1;
+									wirePosition.X += (float)(nextRomDistance - 1);
+								}
+
+								WireColor = 1;
+								offset++;
+								playerPosition = new Vector2(Main.LocalPlayer.position.X / 16f + 2f + (float)offset, Main.LocalPlayer.position.Y / 16f);
+								wirePosition = playerPosition;
+							}
+
+							Console.WriteLine(string.Concat(new string[]{"Schematic: ", SchemName.ToString(), " has loaded successfully!"}));
+							Main.NewTextMultiline(string.Concat(new string[]{"Schematic: ", SchemName.ToString(), " has loaded successfully!"}), false, Color.Green, -1);
+						}
+						catch (Exception)
+						{
+							Console.WriteLine("Schematic: " + SchemName.ToString() + " was not found!");
+							Main.NewTextMultiline("Schematic: " + SchemName.ToString() + " was not found!", false, Color.Red, -1);
+						}
+					}
+
+					// Command Finished
+					return;
+				}
+				catch (Exception)
+				{
+					Console.WriteLine("ERROR: Command Usage - /arom [schem]");
+					Main.NewTextMultiline("ERROR: Command Usage - /arom [schem]", false, Color.Red, -1);
+				}
+
+				return;
+			}
+
+			// ###################################################################################
+			if (message.Text.Contains("/delrom")) // Animation rom.
+			{
+				string SchemName = "";
+				int RunBy = 0;
+				string Message = message.Text;
+				int nextRomDistance = 44;
+				// int nextRomDistance = 1308;
+				int offset = 0;
+				Vector2 playerPosition = new Vector2(Main.LocalPlayer.position.X / 16f + 2f + (float)offset, Main.LocalPlayer.position.Y / 16f);
+				Vector2 wirePosition = playerPosition;
+				try
+				{
+					// Create a new list of words based on a sentences spaces.
+					List<string> wordList = Message.TrimStart(new char[]{' '}).Split(new char[]{' '}).ToList<string>();
+					wordList.RemoveAt(0); // Remove the first word -> /schem.
+					// Define variables based on the list of words.
+					foreach (string OutString in string.Join(" ", wordList.ToArray()).Split(new char[]{' '}))
+					{
+						if (RunBy == 0) // Define the first variable.
+						{
+							SchemName = OutString;
+							RunBy++;
+						}
+					}
+
+					// Load Schem
+					if (SchemName == "")
+					{
+						Console.WriteLine("ERROR: Type a schematic name!");
+						Main.NewTextMultiline("ERROR: Type a schematic name!", false, Color.Red, -1);
+						return;
+					}
+					else
+					{
+						try
+						{
+							// Go through each line of wordlist.
+							foreach (string Line in File.ReadLines(@"C:\Program Files (x86)\Steam\steamapps\common\Terraria\#romupload\" + SchemName + ".txt"))
+							{
+								// string[] array2 = ChatCommandProcessor.SplitIntoEqualParts(Line, 6);
+								string[] array2 = ChatCommandProcessor.SplitIntoEqualParts(Line, 1);
+								string[] array = array2;
+								for (int i = 0; i < array.Length; i++)
+								{
+									foreach (string LinePart in ChatCommandProcessor.SplitIntoEqualParts(array[i], 2))
+									{
+										// Check if to use encoding.
+										var bitFormat = ConvertXORArray(LinePart);
+										foreach (char bit in bitFormat)
+										{
+											Main.tile[(int)wirePosition.X, (int)wirePosition.Y].wire(false);
+											Main.tile[(int)wirePosition.X, (int)wirePosition.Y].wire2(false);
+											wirePosition.Y += 3f;
+										}
+
+										wirePosition.Y = playerPosition.Y;
+									}
+
+									wirePosition.X += (float)(nextRomDistance - 1);
+								}
+
+								offset++;
+								playerPosition = new Vector2(Main.LocalPlayer.position.X / 16f + 2f + (float)offset, Main.LocalPlayer.position.Y / 16f);
+								wirePosition = playerPosition;
+							}
+
+							Console.WriteLine(string.Concat(new string[]{"Schematic: ", SchemName.ToString(), " has loaded successfully!"}));
+							Main.NewTextMultiline(string.Concat(new string[]{"Schematic: ", SchemName.ToString(), " has loaded successfully!"}), false, Color.Green, -1);
+						}
+						catch (Exception)
+						{
+							Console.WriteLine("Schematic: " + SchemName.ToString() + " was not found!");
+							Main.NewTextMultiline("Schematic: " + SchemName.ToString() + " was not found!", false, Color.Red, -1);
+						}
+					}
+
+					// Command Finished
+					return;
+				}
+				catch (Exception)
+				{
+					Console.WriteLine("ERROR: Command Usage - /arom [schem]");
+					Main.NewTextMultiline("ERROR: Command Usage - /arom [schem]", false, Color.Red, -1);
+				}
+
+				return;
+			}
+
+			// ###################################################################################
+			IChatCommand chatCommand;
+			if (this._commands.TryGetValue(message.CommandId, out chatCommand))
+			{
+				chatCommand.ProcessIncomingMessage(message.Text, (byte)clientId);
+				message.Consume();
+				return;
+			}
+
+			if (this._defaultCommand != null)
+			{
+				this._defaultCommand.ProcessIncomingMessage(message.Text, (byte)clientId);
+				message.Consume();
+			}
+		}
+
+		// Update the richtextbox.
+		public static String ConvertXORArray(string value)
+		{
+			// Go through each char within string.
+			string finalString = "";
+			int previousNumber = 1;
+			foreach (char c in value)
+			{
+				// Current number within string.
+				int currentNumber = int.Parse(c.ToString());
+				// Add the current with the previous.
+				int mathVar = 0;
+				// Compare mathvar to the truth table.
+				if (previousNumber == 0 && currentNumber == 0) // 0 + 0 = 0.
+				{
+					mathVar = 0;
+				}
+				else if (previousNumber == 1 && currentNumber == 0) // 1 + 0 = 1 OR 0 + 1 = 1.
+				{
+					mathVar = 1;
+				}
+				else if (previousNumber == 0 && currentNumber == 1)
+				{
+					mathVar = 1;
+				}
+				else if (previousNumber == 1 && currentNumber == 1) // 1 + 1 = 0.
+				{
+					mathVar = 0;
+				}
+
+				// Add value to final string.
+				finalString += mathVar;
+				// Update the previous number.
+				previousNumber = currentNumber;
+			}
+
+			// Return the array.
+			// return String.Join(" ", new String(finalString.Reverse().ToArray())); // Reverse array.
+			return String.Join(" ", new String(finalString.ToArray())); // Nornal array.
+		// return String.Join(" ", new String(finalString.ToArray().Select(c => c == '0' ? '1' : '0').ToArray())); // Inverted array.
+		}
+
+		// Split string into equal parts.
+		public static String[] SplitIntoEqualParts(string str, int lengh)
+		{
+			int temp = 0, chars = str.Length / lengh;
+			String[] equalStr = new String[lengh];
+			// Check whether a string can be divided into n equal parts.
+			if (str.Length % lengh != 0)
+			{
+				Console.WriteLine("ERROR: String cannot be divided into " + lengh + " equal parts.");
+				return new String[]{};
+			}
+			else
+			{
+				for (int i = 0; i < str.Length; i = i + chars)
+				{
+					// Dividing string in n equal part using substring().
+					string part = str.Substring(i, chars);
+					equalStr[temp] = part;
+					temp++;
+				}
+
+				return equalStr;
+			}
+		}
+	}
+}
+```
+</details>
+
+![ROM1](https://github.com/RussDev7/TerrariaDigitalStorage/assets/33048298/7ef192c2-6c3e-4a11-8226-b07321c82654)
+
 ## **Faulty Gate ROM (1 bit each 1 tile)**
 **NOTES:**
  - The only storage mechanism that can store 1 bit per 1 tile.
@@ -602,320 +915,7 @@ namespace Terraria.Chat
 ```
 </details>
 
-![ROM1](https://github.com/RussDev7/TerrariaDigitalStorage/assets/33048298/596920d3-c687-451f-b2d8-14e2ccb34918)
-
-## **Stacked Gate ROM (2 bits each 3 tiles)**
-**NOTES:**
- - Cells can easily be tiled.
- - Data is stored vertically.
- - The most lag friendly version of ROM.
-
-**REAL WORLD USES:**
- - [Animated Gigachad Via 2000 Terraria Pixelboxes](https://www.youtube.com/watch?v=aD0I7u_OLuE)
-
-**SAMPLE PROGRAMMING CODE:**
-<details><summary>Show Code</summary>
- 
-```c#
-//###################################################################################
-//Terraria.Chat > ChatCommandProcessor (OR CreateOutgoingMessage)
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using Microsoft.Xna.Framework;
-using Terraria.Chat.Commands;
-using Terraria.Localization;
-using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
-
-namespace Terraria.Chat
-{
-	public partial class ChatCommandProcessor : IChatProcessor
-	{
-		public void ProcessIncomingMessage(ChatMessage message, int clientId)
-		{
-			// ###################################################################################
-			if (message.Text.Contains("/arom")) // Animation rom.
-			{
-				string SchemName = "";
-				int RunBy = 0;
-				string Message = message.Text;
-				int nextRomDistance = 44;
-				// int nextRomDistance = 1308;
-				int offset = 0;
-				Vector2 playerPosition = new Vector2(Main.LocalPlayer.position.X / 16f + 2f + (float)offset, Main.LocalPlayer.position.Y / 16f);
-				Vector2 wirePosition = playerPosition;
-				int WireColor = 1;
-				try
-				{
-					// Create a new list of words based on a sentences spaces.
-					List<string> wordList = Message.TrimStart(new char[]{' '}).Split(new char[]{' '}).ToList<string>();
-					wordList.RemoveAt(0); // Remove the first word -> /schem.
-					
-					// Define variables based on the list of words.
-					foreach (string OutString in string.Join(" ", wordList.ToArray()).Split(new char[]{' '}))
-					{
-						if (RunBy == 0) // Define the first variable.
-						{
-							SchemName = OutString;
-							RunBy++;
-						}
-					}
-
-					// Load Schem
-					if (SchemName == "")
-					{
-						Console.WriteLine("ERROR: Type a schematic name!");
-						Main.NewTextMultiline("ERROR: Type a schematic name!", false, Color.Red, -1);
-						return;
-					}
-					else
-					{
-						try
-						{
-							// Go through each line of wordlist.
-							foreach (string Line in File.ReadLines(@"C:\Program Files (x86)\Steam\steamapps\common\Terraria\#romupload\" + SchemName + ".txt"))
-							{
-								// string[] array2 = ChatCommandProcessor.SplitIntoEqualParts(Line, 6);
-								string[] array2 = ChatCommandProcessor.SplitIntoEqualParts(Line, 1);
-								string[] array = array2;
-								for (int i = 0; i < array.Length; i++)
-								{
-									foreach (string LinePart in ChatCommandProcessor.SplitIntoEqualParts(array[i], 2))
-									{
-										// Check if to use encoding.
-										var bitFormat = ConvertXORArray(LinePart);
-										for (int k = 0; k < bitFormat.Length; k++)
-										{
-											if (bitFormat[k].ToString() == "1")
-											{
-												if (WireColor == 1)
-												{
-													WorldGen.PlaceWire2((int)wirePosition.X, (int)wirePosition.Y);
-												}
-												else if (WireColor == 2)
-												{
-													WorldGen.PlaceWire((int)wirePosition.X, (int)wirePosition.Y);
-												}
-											}
-
-											wirePosition.Y += 3f;
-										}
-
-										wirePosition.Y = playerPosition.Y;
-										WireColor = 2;
-									}
-
-									WireColor = 1;
-									wirePosition.X += (float)(nextRomDistance - 1);
-								}
-
-								WireColor = 1;
-								offset++;
-								playerPosition = new Vector2(Main.LocalPlayer.position.X / 16f + 2f + (float)offset, Main.LocalPlayer.position.Y / 16f);
-								wirePosition = playerPosition;
-							}
-
-							Console.WriteLine(string.Concat(new string[]{"Schematic: ", SchemName.ToString(), " has loaded successfully!"}));
-							Main.NewTextMultiline(string.Concat(new string[]{"Schematic: ", SchemName.ToString(), " has loaded successfully!"}), false, Color.Green, -1);
-						}
-						catch (Exception)
-						{
-							Console.WriteLine("Schematic: " + SchemName.ToString() + " was not found!");
-							Main.NewTextMultiline("Schematic: " + SchemName.ToString() + " was not found!", false, Color.Red, -1);
-						}
-					}
-
-					// Command Finished
-					return;
-				}
-				catch (Exception)
-				{
-					Console.WriteLine("ERROR: Command Usage - /arom [schem]");
-					Main.NewTextMultiline("ERROR: Command Usage - /arom [schem]", false, Color.Red, -1);
-				}
-
-				return;
-			}
-
-			// ###################################################################################
-			if (message.Text.Contains("/delrom")) // Animation rom.
-			{
-				string SchemName = "";
-				int RunBy = 0;
-				string Message = message.Text;
-				int nextRomDistance = 44;
-				// int nextRomDistance = 1308;
-				int offset = 0;
-				Vector2 playerPosition = new Vector2(Main.LocalPlayer.position.X / 16f + 2f + (float)offset, Main.LocalPlayer.position.Y / 16f);
-				Vector2 wirePosition = playerPosition;
-				try
-				{
-					// Create a new list of words based on a sentences spaces.
-					List<string> wordList = Message.TrimStart(new char[]{' '}).Split(new char[]{' '}).ToList<string>();
-					wordList.RemoveAt(0); // Remove the first word -> /schem.
-					// Define variables based on the list of words.
-					foreach (string OutString in string.Join(" ", wordList.ToArray()).Split(new char[]{' '}))
-					{
-						if (RunBy == 0) // Define the first variable.
-						{
-							SchemName = OutString;
-							RunBy++;
-						}
-					}
-
-					// Load Schem
-					if (SchemName == "")
-					{
-						Console.WriteLine("ERROR: Type a schematic name!");
-						Main.NewTextMultiline("ERROR: Type a schematic name!", false, Color.Red, -1);
-						return;
-					}
-					else
-					{
-						try
-						{
-							// Go through each line of wordlist.
-							foreach (string Line in File.ReadLines(@"C:\Program Files (x86)\Steam\steamapps\common\Terraria\#romupload\" + SchemName + ".txt"))
-							{
-								// string[] array2 = ChatCommandProcessor.SplitIntoEqualParts(Line, 6);
-								string[] array2 = ChatCommandProcessor.SplitIntoEqualParts(Line, 1);
-								string[] array = array2;
-								for (int i = 0; i < array.Length; i++)
-								{
-									foreach (string LinePart in ChatCommandProcessor.SplitIntoEqualParts(array[i], 2))
-									{
-										// Check if to use encoding.
-										var bitFormat = ConvertXORArray(LinePart);
-										foreach (char bit in bitFormat)
-										{
-											Main.tile[(int)wirePosition.X, (int)wirePosition.Y].wire(false);
-											Main.tile[(int)wirePosition.X, (int)wirePosition.Y].wire2(false);
-											wirePosition.Y += 3f;
-										}
-
-										wirePosition.Y = playerPosition.Y;
-									}
-
-									wirePosition.X += (float)(nextRomDistance - 1);
-								}
-
-								offset++;
-								playerPosition = new Vector2(Main.LocalPlayer.position.X / 16f + 2f + (float)offset, Main.LocalPlayer.position.Y / 16f);
-								wirePosition = playerPosition;
-							}
-
-							Console.WriteLine(string.Concat(new string[]{"Schematic: ", SchemName.ToString(), " has loaded successfully!"}));
-							Main.NewTextMultiline(string.Concat(new string[]{"Schematic: ", SchemName.ToString(), " has loaded successfully!"}), false, Color.Green, -1);
-						}
-						catch (Exception)
-						{
-							Console.WriteLine("Schematic: " + SchemName.ToString() + " was not found!");
-							Main.NewTextMultiline("Schematic: " + SchemName.ToString() + " was not found!", false, Color.Red, -1);
-						}
-					}
-
-					// Command Finished
-					return;
-				}
-				catch (Exception)
-				{
-					Console.WriteLine("ERROR: Command Usage - /arom [schem]");
-					Main.NewTextMultiline("ERROR: Command Usage - /arom [schem]", false, Color.Red, -1);
-				}
-
-				return;
-			}
-
-			// ###################################################################################
-			IChatCommand chatCommand;
-			if (this._commands.TryGetValue(message.CommandId, out chatCommand))
-			{
-				chatCommand.ProcessIncomingMessage(message.Text, (byte)clientId);
-				message.Consume();
-				return;
-			}
-
-			if (this._defaultCommand != null)
-			{
-				this._defaultCommand.ProcessIncomingMessage(message.Text, (byte)clientId);
-				message.Consume();
-			}
-		}
-
-		// Update the richtextbox.
-		public static String ConvertXORArray(string value)
-		{
-			// Go through each char within string.
-			string finalString = "";
-			int previousNumber = 1;
-			foreach (char c in value)
-			{
-				// Current number within string.
-				int currentNumber = int.Parse(c.ToString());
-				// Add the current with the previous.
-				int mathVar = 0;
-				// Compare mathvar to the truth table.
-				if (previousNumber == 0 && currentNumber == 0) // 0 + 0 = 0.
-				{
-					mathVar = 0;
-				}
-				else if (previousNumber == 1 && currentNumber == 0) // 1 + 0 = 1 OR 0 + 1 = 1.
-				{
-					mathVar = 1;
-				}
-				else if (previousNumber == 0 && currentNumber == 1)
-				{
-					mathVar = 1;
-				}
-				else if (previousNumber == 1 && currentNumber == 1) // 1 + 1 = 0.
-				{
-					mathVar = 0;
-				}
-
-				// Add value to final string.
-				finalString += mathVar;
-				// Update the previous number.
-				previousNumber = currentNumber;
-			}
-
-			// Return the array.
-			// return String.Join(" ", new String(finalString.Reverse().ToArray())); // Reverse array.
-			return String.Join(" ", new String(finalString.ToArray())); // Nornal array.
-		// return String.Join(" ", new String(finalString.ToArray().Select(c => c == '0' ? '1' : '0').ToArray())); // Inverted array.
-		}
-
-		// Split string into equal parts.
-		public static String[] SplitIntoEqualParts(string str, int lengh)
-		{
-			int temp = 0, chars = str.Length / lengh;
-			String[] equalStr = new String[lengh];
-			// Check whether a string can be divided into n equal parts.
-			if (str.Length % lengh != 0)
-			{
-				Console.WriteLine("ERROR: String cannot be divided into " + lengh + " equal parts.");
-				return new String[]{};
-			}
-			else
-			{
-				for (int i = 0; i < str.Length; i = i + chars)
-				{
-					// Dividing string in n equal part using substring().
-					string part = str.Substring(i, chars);
-					equalStr[temp] = part;
-					temp++;
-				}
-
-				return equalStr;
-			}
-		}
-	}
-}
-```
-</details>
-
-![ROM2](https://github.com/RussDev7/TerrariaDigitalStorage/assets/33048298/7ef192c2-6c3e-4a11-8226-b07321c82654)
+![ROM2](https://github.com/RussDev7/TerrariaDigitalStorage/assets/33048298/596920d3-c687-451f-b2d8-14e2ccb34918)
 
 ## **Stacked Lamp Serial ROM (4 bits each 3 tiles)**
 **NOTES:**
