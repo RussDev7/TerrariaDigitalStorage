@@ -6,9 +6,11 @@
 ![RAM1](https://github.com/RussDev7/TerrariaDigitalStorage/assets/33048298/4eafa669-5ab4-4451-8220-50534bb197ea)
 
 NOTES:
- - 
- - 
- - 
+ - The densest possible RAM available in Terraria.
+ - Data is written vertically.
+
+USES:
+ - [Terraria: (Remastered) 24x24 Pixelbox Bad Apple!!](https://www.youtube.com/watch?v=35gh2iNliKQ)
 
 <details><summary>Sample Program Code</summary>
  
@@ -152,9 +154,11 @@ namespace Terraria.Chat
 ![ROM1](https://github.com/RussDev7/TerrariaDigitalStorage/assets/33048298/596920d3-c687-451f-b2d8-14e2ccb34918)
 
 NOTES:
- - 
- - 
- - 
+ - The only storage mechanism that can store 1 bit per 1 tile.
+ - Data is stored horizontally.
+
+USES:
+ - [v1: Terraria But Its Animated Shrek](https://www.youtube.com/watch?v=EVP2zqgrtzg)
 
 <details><summary>Sample Program Code</summary>
  
@@ -602,9 +606,12 @@ namespace Terraria.Chat
 ![ROM2](https://github.com/RussDev7/TerrariaDigitalStorage/assets/33048298/7ef192c2-6c3e-4a11-8226-b07321c82654)
 
 NOTES:
- - 
- - 
- - 
+ - Cells can easily be tiled.
+ - Data is stored vertically.
+ - The most lag friendly version of ROM.
+
+USES:
+ - [Animated Gigachad Via 2000 Terraria Pixelboxes](https://www.youtube.com/watch?v=aD0I7u_OLuE)
 
 <details><summary>Sample Program Code</summary>
  
@@ -911,9 +918,12 @@ namespace Terraria.Chat
 ![ROM3](https://github.com/RussDev7/TerrariaDigitalStorage/assets/33048298/c62619cb-1455-4f3a-821b-ed803514a75c)
 
 NOTES:
- - 
- - 
- - 
+ - Full serial-based ROM.
+ - Data is stored horizontally.
+ - Densest version of ROM.
+
+USES:
+ - [v2: Terraria But Its Animated Shrek](https://www.youtube.com/watch?v=EVP2zqgrtzg)
 
 <details><summary>Sample Program Code</summary>
  
@@ -1238,9 +1248,13 @@ namespace Terraria.Chat
 ![ROM4](https://github.com/RussDev7/TerrariaDigitalStorage/assets/33048298/fbc6edb4-6493-481f-90db-829f45200f79)
 
 NOTES:
- - 
- - 
- - 
+ - Parallel variation of the serial-based ROM.
+ - Data is stored horizontally.
+ - Optimized lag performance over serial.
+ - Densest version of ROM.
+
+USES:
+ - [v3: Terraria But Its Animated Shrek](https://www.youtube.com/watch?v=EVP2zqgrtzg)
 
 <details><summary>Sample Program Code</summary>
  
@@ -1503,9 +1517,14 @@ namespace Terraria.Chat
 ![ROM5](https://github.com/RussDev7/TerrariaDigitalStorage/assets/33048298/07ed023c-4d58-48f1-8a55-5d3ba1e9496c)
 
 NOTES:
- - 
- - 
- - 
+ - Parallel variation of the serial-based ROM.
+ - Data is stored horizontally.
+ - Optimized lag performance over serial.
+ - Densest version of ROM.
+ - Cells where split allow for super large screen support.
+
+USES:
+ - [The largest possible pixelbox display in Terraria playing badapple!!](https://www.youtube.com/watch?v=bE96Vxmg8Xw)
 
 <details><summary>Sample Program Code</summary>
  
@@ -1816,6 +1835,7 @@ namespace Terraria.Chat
 }
 ```
 </details>
-**Step4: Accelerating The Wiring**
+
+## **Accelerating The Wiring**
 
 Due to the way Terraria logic system is, larger wiring builds will freeze your game each time you power them up. To fix this, we can use a mod called the [Terraria Circuit Preprocessing Accelerator](https://github.com/RussDev7/TerrariaCircuitPreprocessingAccelerator-1.4.4.9) to pre-process the wiring and prevent lagging while still maintaining the vanilla logic system.
