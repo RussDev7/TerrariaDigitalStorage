@@ -1854,6 +1854,194 @@ namespace Terraria.Chat
 
 ![ROM5](https://github.com/RussDev7/TerrariaDigitalStorage/assets/33048298/07ed023c-4d58-48f1-8a55-5d3ba1e9496c)
 
+## **Stacked Lamp Serial Non-Random ROM (4 bits each 3 tiles)**
+**NOTES:**
+ - Full serial-based non-random ROM.
+ - Densest version of N-ROM.
+ - Non-random ROM can be navigated like RAM.
+ - Data is stored horizontally.
+ - Data format is (flipped ->) XOR.
+
+**REAL WORLD USES:**
+ - [Coming Soon!](https://google.com)
+
+**SAMPLE PROGRAMMING CODE:**
+<details><summary>Show Code</summary>
+ 
+```c#
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using Microsoft.Xna.Framework;
+using Terraria.Chat.Commands;
+using Terraria.Localization;
+using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
+
+namespace Terraria.Chat
+{
+    public partial class ChatCommandProcessor : IChatProcessor
+    {
+        public void ProcessIncomingMessage(ChatMessage message, int clientId)
+        {
+            if (message.Text.StartsWith("/nrom")) // Non-Random ROM.
+            {
+                string Message = message.Text;
+                string SchemName = "";
+                int RunBy = 0;
+                
+                // Create a new list of words based on a sentences spaces.
+                List<string> wordList = Message.TrimStart(new char[]{' '}).Split(new char[]{' '}).ToList<string>();
+                wordList.RemoveAt(0); // Remove the first word -> /schem.
+                    
+                // Define variables based on the list of words.
+                foreach (string OutString in string.Join(" ", wordList.ToArray()).Split(new char[]{' '}))
+                {
+                    if (RunBy == 0) // Define the first variable.
+                    {
+                        SchemName = OutString;
+                        RunBy++;
+                    }
+                }
+                
+                // Load Schem
+                if (SchemName == "")
+                {
+                    Console.WriteLine("ERROR: Type a schematic name!");
+                    Main.NewTextMultiline("ERROR: Type a schematic name!", false, Color.Red, -1);
+                    return;
+                }
+                else
+                {
+                    try
+                    {
+                        // 1's are off, 0's are on.
+                        int[] data = File.ReadAllLines(@"C:\Program Files (x86)\Steam\steamapps\common\Terraria\#romupload\" + SchemName + ".txt")
+                                .Select(line => Convert.ToInt32(line, 2))  // Binary strings: '000000000000000000000' (no leading 0b)
+                                .ToArray();
+                        
+                        int width = Convert.ToString(data[0], 2).Length; // int width = 21;
+                        int height = data.Length;
+                        
+                        Vector2 vector = new Vector2((Main.LocalPlayer.position.X / 16), (Main.LocalPlayer.position.Y / 16) + 7); // Offset 7 down.
+                        
+                        // Convert to XOR and flip the data.
+                        int[] xordata = reverseBits(XOR(width, data));
+        
+                        for (int i = 0; i < 4; i++)
+                        {
+                            for (int j = 0; j < height / 4; j++)
+                            {
+                                for (int k = 0; k < width; k++)
+                                {
+                                    switch (i)
+                                    {
+                                        case 0:
+                                            {
+                                                Main.tile[(int)vector.X + k, (int)vector.Y + j * 3 + 1].wire(true);
+                                                if (((1 << k) & xordata[j + i * height / 4]) == 0)
+                                                    Main.tile[(int)vector.X + k, (int)vector.Y + j * 3 + 0].wire(true);
+                                                break;
+                                            }
+                                        case 1:
+                                            {
+                                                Main.tile[(int)vector.X + k, (int)vector.Y + j * 3 + 1].wire2(true);
+                                                if (((1 << k) & xordata[j + i * height / 4]) == 0)
+                                                    Main.tile[(int)vector.X + k, (int)vector.Y + j * 3 + 0].wire2(true);
+                                                break;
+                                            }
+                                        case 2:
+                                            {
+                                                Main.tile[(int)vector.X + k, (int)vector.Y + j * 3 + 2].wire3(true);
+                                                if (((1 << k) & xordata[j + i * height / 4]) == 0)
+                                                    Main.tile[(int)vector.X + k, (int)vector.Y + j * 3 + 3].wire3(true);
+                                                break;
+                                            }
+                                        case 3:
+                                            {
+                                                Main.tile[(int)vector.X + k, (int)vector.Y + j * 3 + 2].wire4(true);
+                                                if (((1 << k) & xordata[j + i * height / 4]) == 0)
+                                                    Main.tile[(int)vector.X + k, (int)vector.Y + j * 3 + 3].wire4(true);
+                                                break;
+                                            }
+                                    }
+        
+                                }
+                            }
+                        }
+                        NetMessage.SendTileSquare(Main.myPlayer, (int)vector.X, (int)vector.Y, width, 3 * height / 4 + 1, Terraria.ID.TileChangeType.None);
+                
+                            // Display success message and return.
+                            Console.WriteLine("Non-Random ROM Data Placed!");
+                            Main.NewTextMultiline("Non-Random ROM Data Placed!", false, Color.Green, -1);
+                    }
+                    catch (Exception)
+                    {
+                        Console.WriteLine("Schematic: " + SchemName.ToString() + " was not found!");
+                        Main.NewTextMultiline("Schematic: " + SchemName.ToString() + " was not found!", false, Color.Red, -1);
+                    }
+                }
+
+                // Command Finished
+                return;
+            }
+            IChatCommand chatCommand;
+            if (this._commands.TryGetValue(message.CommandId, out chatCommand))
+            {
+                chatCommand.ProcessIncomingMessage(message.Text, (byte)clientId);
+                message.Consume();
+                return;
+            }
+
+            if (this._defaultCommand != null)
+            {
+                this._defaultCommand.ProcessIncomingMessage(message.Text, (byte)clientId);
+                message.Consume();
+            }
+        }
+        
+        // XOR conversion function.
+        static int[] XOR(int weight, int[] data)
+        {
+            int mask = (1 << weight) - 1;
+            int[] xordata = new int[data.Length];
+
+            for (int i = 0; i < data.Length; i++)
+            {
+                xordata[i] = data[i] ^ data[i] << 1 & mask;
+            }
+            return xordata;
+        }
+        
+        // Function to flip an array of integers.
+        static int[] reverseBits(int[] input)
+        {
+            int[] reversedArray = new int[input.Length];
+            for (int a = 0; a < input.Length; a++)
+            {
+                int numOfBits = Convert.ToString(input[0], 2).Length;
+                int reversed = 0;
+                for (int i = 0; i < numOfBits; i++)
+                {
+                    if ((input[a] & (1 << i)) != 0)
+                    {
+                        reversed |= 1 << (numOfBits - 1 - i);
+                    }
+                }
+
+                reversedArray[a] = reversed;
+            }
+
+            return reversedArray;
+        }
+    }
+}
+```
+</details>
+
+![ROM6](https://github.com/RussDev7/TerrariaDigitalStorage/assets/33048298/888048c3-4097-412a-aef9-46aba8d7b8b5)
+
 ## **Accelerating The Wiring**
 
 Due to the way Terraria logic system is, larger wiring builds will freeze your game each time you power them up. To fix this, we can use a mod called the [Terraria Circuit Preprocessing Accelerator](https://github.com/RussDev7/TerrariaCircuitPreprocessingAccelerator-1.4.4.9) to pre-process the wiring and prevent lagging while still maintaining the vanilla logic system.
